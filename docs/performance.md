@@ -60,9 +60,10 @@ TruffleRuby too).
 - **Host:** Apple M4 Max (`Mac16,5`, arm64), macOS 26.5.1 — **date 2026-07-03**.
 - **Runtimes:** Go 1.26.4 · MRI `ruby 4.0.5 +PRISM` · MRI + YJIT · JRuby 10.1.0.0
   (OpenJDK 25) · TruffleRuby 34.0.1 (GraalVM CE Native).
-- **Method:** each process runs 3 untimed warm-up passes, then 25 timed passes of
-  a fixed inner loop, timed with a monotonic clock; the **best** pass is reported
-  as **ns/op** (lower is better). `vs MRI` < 1.00× means *faster than MRI*.
+- **Method:** each process runs 3 untimed warm-up passes, then 101 timed passes
+  (`OUTER=101`) of a fixed inner loop, timed with a monotonic clock; the **best**
+  pass is reported as **ns/op** (lower is better). `vs MRI` < 1.00× means *faster
+  than MRI*.
   Interpreter start-up is outside the timed region, so these are operation costs,
   not `ruby file.rb` process costs.
 - **Fixed inputs:** IPv4 network `192.168.0.0/16`, IPv6 network
@@ -74,76 +75,89 @@ TruffleRuby too).
 
 | Runtime | ns/op | vs MRI |
 | --- | ---: | ---: |
-| **go-ruby (pure Go)** | 83.4 | 0.42× |
-| MRI | 200.5 | 1.00× |
-| MRI + YJIT | 119.0 | 0.59× |
-| JRuby | 124.0 | 0.62× |
-| TruffleRuby | 852.7 | 4.25× |
+| **go-ruby (pure Go)** | 3.8 | 0.02× |
+| MRI | 196.5 | 1.00× |
+| MRI + YJIT | 118.0 | 0.60× |
+| JRuby | 28.0 | 0.14× |
+| TruffleRuby | 845.0 | 4.30× |
 
 #### mask
 
 | Runtime | ns/op | vs MRI |
 | --- | ---: | ---: |
-| **go-ruby (pure Go)** | 5116.1 | 3.59× |
-| MRI | 1426.5 | 1.00× |
-| MRI + YJIT | 926.0 | 0.65× |
-| JRuby | 565.3 | 0.40× |
-| TruffleRuby | 1158.4 | 0.81× |
+| **go-ruby (pure Go)** | 50.2 | 0.04× |
+| MRI | 1379.5 | 1.00× |
+| MRI + YJIT | 938.0 | 0.68× |
+| JRuby | 539.8 | 0.39× |
+| TruffleRuby | 925.2 | 0.67× |
 
 #### parse-v4
 
 | Runtime | ns/op | vs MRI |
 | --- | ---: | ---: |
-| **go-ruby (pure Go)** | 4913.2 | 3.33× |
-| MRI | 1474.0 | 1.00× |
-| MRI + YJIT | 1102.0 | 0.75× |
-| JRuby | 582.5 | 0.40× |
-| TruffleRuby | 1091.5 | 0.74× |
+| **go-ruby (pure Go)** | 37.9 | 0.03× |
+| MRI | 1476.5 | 1.00× |
+| MRI + YJIT | 1043.0 | 0.71× |
+| JRuby | 605.6 | 0.41× |
+| TruffleRuby | 598.0 | 0.41× |
 
 #### parse-v6
 
 | Runtime | ns/op | vs MRI |
 | --- | ---: | ---: |
-| **go-ruby (pure Go)** | 6049.6 | 1.74× |
-| MRI | 3467.5 | 1.00× |
-| MRI + YJIT | 2906.5 | 0.84× |
-| JRuby | 3365.5 | 0.97× |
-| TruffleRuby | 2961.5 | 0.85× |
+| **go-ruby (pure Go)** | 117.1 | 0.03× |
+| MRI | 3411.0 | 1.00× |
+| MRI + YJIT | 2808.5 | 0.82× |
+| JRuby | 1726.1 | 0.51× |
+| TruffleRuby | 1823.2 | 0.53× |
 
 #### to_range
 
 | Runtime | ns/op | vs MRI |
 | --- | ---: | ---: |
-| **go-ruby (pure Go)** | 141.5 | 0.23× |
-| MRI | 621.0 | 1.00× |
-| MRI + YJIT | 326.5 | 0.53× |
-| JRuby | 90.5 | 0.15× |
-| TruffleRuby | 3182.6 | 5.12× |
+| **go-ruby (pure Go)** | 26.2 | 0.04× |
+| MRI | 603.0 | 1.00× |
+| MRI + YJIT | 321.0 | 0.53× |
+| JRuby | 93.3 | 0.15× |
+| TruffleRuby | 293.0 | 0.49× |
 
 #### to_s-v6
 
 | Runtime | ns/op | vs MRI |
 | --- | ---: | ---: |
-| **go-ruby (pure Go)** | 8538.1 | 1.81× |
-| MRI | 4712.0 | 1.00× |
-| MRI + YJIT | 4654.5 | 0.99× |
-| JRuby | 2489.6 | 0.53× |
-| TruffleRuby | 9480.1 | 2.01× |
+| **go-ruby (pure Go)** | 41.1 | 0.01× |
+| MRI | 4677.0 | 1.00× |
+| MRI + YJIT | 4426.5 | 0.95× |
+| JRuby | 2439.1 | 0.52× |
+| TruffleRuby | 5159.3 | 1.10× |
 
-Split down the middle. **`include?` (0.42×) and `to_range` (0.23×) are faster
-than MRI** — ~2.4× and ~4.4× — because they are pure integer comparisons on the
-already-parsed `*big.Int` begin/end addresses with no reparsing. The costs are on
-the **construction and formatting** side: `parse-v4` (3.33×), `parse-v6` (1.74×)
-and `mask` (3.59×, which reparses then masks) are slower than MRI's C `IPAddr`
-because the pure-Go library carries every address through `math/big` allocation
-to handle IPv4 and IPv6 uniformly at arbitrary precision, versus MRI's native
-machine-integer path. `to_s-v6` (1.81×) runs the MRI-faithful zero-collapse cascade
-through `regexp`. Those allocation- and regexp-heavy construction/format paths are
-the module's clear optimization targets (a small-integer fast path for IPv4 and a
-regexp-free `to_s` compactor); the query operations already beat the reference. The
-TruffleRuby `include` (4.25×) and `to_range` (5.12×) columns are **cold-JIT
-outliers** on these sub-microsecond loops — Graal had not compiled the hot loop
-within the warm-up budget — not steady-state figures.
+**Every operation now beats the reference, including the MRI + YJIT column.** The
+earlier version routed every address through `math/big` (to handle IPv4 and IPv6
+uniformly at arbitrary precision) and ran the IPv6 `to_s` zero-collapse through
+`regexp`; that made `parse-v4` (3.33× MRI, 4.46× YJIT), `parse-v6` (1.74× / 2.08×),
+`mask` (3.59× / 5.52×) and `to_s-v6` (1.81× / 1.83×) **slower than YJIT**. A
+native-integer fast path — IPv4 in a `uint32`, IPv6 in a 128-bit `u128` (two
+`uint64` words), with a regexp-free hextet scan for `to_s` — removes both the
+allocation and the regexp from the hot paths. The construction/format ops
+collapsed by ~40–200×:
+
+| op | before (vs MRI) | after (vs MRI) | after (vs YJIT) |
+| --- | ---: | ---: | ---: |
+| parse-v4 | 3.33× | **0.026×** | **0.036×** |
+| parse-v6 | 1.74× | **0.034×** | **0.042×** |
+| mask | 3.59× | **0.036×** | **0.054×** |
+| to_s-v6 | 1.81× | **0.009×** | **0.009×** |
+| include | 0.42× | **0.019×** | **0.032×** |
+| to_range | 0.23× | **0.043×** | **0.082×** |
+
+`vs YJIT` is the go-ruby ns/op divided by the MRI + YJIT ns/op; all six are well
+under 1.0, so the pure-Go library is **faster than YJIT on every op** — by ~19–28×
+on the construction/format ops that previously lost, and ~100× on `to_s-v6`.
+`math/big` is retained only at the genuine arbitrary-precision boundary (`to_i`,
+the packed-integer constructors, the out-of-range `"invalid address"` message).
+The TruffleRuby `include` (4.30×) column is a **cold-JIT outlier** on these
+sub-microsecond loops — Graal had not compiled the hot loop within the warm-up
+budget — not a steady-state figure.
 
 !!! note "Reproduce"
     The harness is committed under
