@@ -412,6 +412,75 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#library-level-benchmark-go-api-vs-runtimes-2026-07-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      Library-level benchmark (Go API vs runtimes) — 2026-07-03
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Library-level benchmark (Go API vs runtimes) — 2026-07-03">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#include" class="md-nav__link">
+    <span class="md-ellipsis">
+      include
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mask" class="md-nav__link">
+    <span class="md-ellipsis">
+      mask
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parse-v4" class="md-nav__link">
+    <span class="md-ellipsis">
+      parse-v4
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parse-v6" class="md-nav__link">
+    <span class="md-ellipsis">
+      parse-v6
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to_range" class="md-nav__link">
+    <span class="md-ellipsis">
+      to_range
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to_s-v6" class="md-nav__link">
+    <span class="md-ellipsis">
+      to_s-v6
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -481,6 +550,75 @@
       Result (best of 5, ms)
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#library-level-benchmark-go-api-vs-runtimes-2026-07-03" class="md-nav__link">
+    <span class="md-ellipsis">
+      Library-level benchmark (Go API vs runtimes) — 2026-07-03
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Library-level benchmark (Go API vs runtimes) — 2026-07-03">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#include" class="md-nav__link">
+    <span class="md-ellipsis">
+      include
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mask" class="md-nav__link">
+    <span class="md-ellipsis">
+      mask
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parse-v4" class="md-nav__link">
+    <span class="md-ellipsis">
+      parse-v4
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parse-v6" class="md-nav__link">
+    <span class="md-ellipsis">
+      parse-v6
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to_range" class="md-nav__link">
+    <span class="md-ellipsis">
+      to_range
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#to_s-v6" class="md-nav__link">
+    <span class="md-ellipsis">
+      to_s-v6
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -569,6 +707,288 @@ that complete in well under ~200 ms carry the most relative noise; treat
 their ratios as order-of-magnitude. These are <strong>real measured numbers</strong> from
 the 2026-06-30 run (Apple M-series; <code>ruby 4.0.5 +PRISM</code>, <code>jruby 10.1.0.0</code>,
 <code>truffleruby 34.0.1</code>) — nothing is fabricated or cherry-picked.</p>
+</div>
+<h2 id="library-level-benchmark-go-api-vs-runtimes-2026-07-03">Library-level benchmark (Go API vs runtimes) — 2026-07-03<a class="headerlink" href="#library-level-benchmark-go-api-vs-runtimes-2026-07-03" title="Permanent link">&para;</a></h2>
+<p>This section measures the <strong>pure-Go library directly, through its Go API</strong> — not
+the <code>rbgo</code> interpreter path recorded above. It isolates the library primitive
+from Ruby-interpreter dispatch, answering the parity question head-on: <em>is the
+pure-Go implementation as fast as the reference runtime's own <code>ipaddr</code>?</em> The
+<strong>same workload, same inputs, same iteration counts</strong> run through the Go library
+and through each reference runtime's stdlib; outputs were checked identical to
+MRI before any timing (<code>to_s</code>, the <code>include?</code> boolean, the masked address and the
+<code>to_range</code> endpoints all byte-for-byte equal — verified across MRI, JRuby and
+TruffleRuby too).</p>
+<ul>
+<li><strong>Host:</strong> Apple M4 Max (<code>Mac16,5</code>, arm64), macOS 26.5.1 — <strong>date 2026-07-03</strong>.</li>
+<li><strong>Runtimes:</strong> Go 1.26.4 · MRI <code>ruby 4.0.5 +PRISM</code> · MRI + YJIT · JRuby 10.1.0.0
+  (OpenJDK 25) · TruffleRuby 34.0.1 (GraalVM CE Native).</li>
+<li><strong>Method:</strong> each process runs 3 untimed warm-up passes, then 25 timed passes of
+  a fixed inner loop, timed with a monotonic clock; the <strong>best</strong> pass is reported
+  as <strong>ns/op</strong> (lower is better). <code>vs MRI</code> &lt; 1.00× means <em>faster than MRI</em>.
+  Interpreter start-up is outside the timed region, so these are operation costs,
+  not <code>ruby file.rb</code> process costs.</li>
+<li><strong>Fixed inputs:</strong> IPv4 network <code>192.168.0.0/16</code>, IPv6 network
+  <code>2001:db8:85a3::8a2e:370:7334/64</code>, IPv6 address
+  <code>2001:0db8:0000:0000:0000:ff00:0042:8329</code>, membership host <code>192.168.1.100</code>,
+  mask source <code>192.168.15.7</code> masked to <code>/24</code>.</li>
+</ul>
+<h4 id="include">include<a class="headerlink" href="#include" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Runtime</th>
+<th style="text-align: right;">ns/op</th>
+<th style="text-align: right;">vs MRI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>go-ruby (pure Go)</strong></td>
+<td style="text-align: right;">83.4</td>
+<td style="text-align: right;">0.42×</td>
+</tr>
+<tr>
+<td>MRI</td>
+<td style="text-align: right;">200.5</td>
+<td style="text-align: right;">1.00×</td>
+</tr>
+<tr>
+<td>MRI + YJIT</td>
+<td style="text-align: right;">119.0</td>
+<td style="text-align: right;">0.59×</td>
+</tr>
+<tr>
+<td>JRuby</td>
+<td style="text-align: right;">124.0</td>
+<td style="text-align: right;">0.62×</td>
+</tr>
+<tr>
+<td>TruffleRuby</td>
+<td style="text-align: right;">852.7</td>
+<td style="text-align: right;">4.25×</td>
+</tr>
+</tbody>
+</table>
+<h4 id="mask">mask<a class="headerlink" href="#mask" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Runtime</th>
+<th style="text-align: right;">ns/op</th>
+<th style="text-align: right;">vs MRI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>go-ruby (pure Go)</strong></td>
+<td style="text-align: right;">5116.1</td>
+<td style="text-align: right;">3.59×</td>
+</tr>
+<tr>
+<td>MRI</td>
+<td style="text-align: right;">1426.5</td>
+<td style="text-align: right;">1.00×</td>
+</tr>
+<tr>
+<td>MRI + YJIT</td>
+<td style="text-align: right;">926.0</td>
+<td style="text-align: right;">0.65×</td>
+</tr>
+<tr>
+<td>JRuby</td>
+<td style="text-align: right;">565.3</td>
+<td style="text-align: right;">0.40×</td>
+</tr>
+<tr>
+<td>TruffleRuby</td>
+<td style="text-align: right;">1158.4</td>
+<td style="text-align: right;">0.81×</td>
+</tr>
+</tbody>
+</table>
+<h4 id="parse-v4">parse-v4<a class="headerlink" href="#parse-v4" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Runtime</th>
+<th style="text-align: right;">ns/op</th>
+<th style="text-align: right;">vs MRI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>go-ruby (pure Go)</strong></td>
+<td style="text-align: right;">4913.2</td>
+<td style="text-align: right;">3.33×</td>
+</tr>
+<tr>
+<td>MRI</td>
+<td style="text-align: right;">1474.0</td>
+<td style="text-align: right;">1.00×</td>
+</tr>
+<tr>
+<td>MRI + YJIT</td>
+<td style="text-align: right;">1102.0</td>
+<td style="text-align: right;">0.75×</td>
+</tr>
+<tr>
+<td>JRuby</td>
+<td style="text-align: right;">582.5</td>
+<td style="text-align: right;">0.40×</td>
+</tr>
+<tr>
+<td>TruffleRuby</td>
+<td style="text-align: right;">1091.5</td>
+<td style="text-align: right;">0.74×</td>
+</tr>
+</tbody>
+</table>
+<h4 id="parse-v6">parse-v6<a class="headerlink" href="#parse-v6" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Runtime</th>
+<th style="text-align: right;">ns/op</th>
+<th style="text-align: right;">vs MRI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>go-ruby (pure Go)</strong></td>
+<td style="text-align: right;">6049.6</td>
+<td style="text-align: right;">1.74×</td>
+</tr>
+<tr>
+<td>MRI</td>
+<td style="text-align: right;">3467.5</td>
+<td style="text-align: right;">1.00×</td>
+</tr>
+<tr>
+<td>MRI + YJIT</td>
+<td style="text-align: right;">2906.5</td>
+<td style="text-align: right;">0.84×</td>
+</tr>
+<tr>
+<td>JRuby</td>
+<td style="text-align: right;">3365.5</td>
+<td style="text-align: right;">0.97×</td>
+</tr>
+<tr>
+<td>TruffleRuby</td>
+<td style="text-align: right;">2961.5</td>
+<td style="text-align: right;">0.85×</td>
+</tr>
+</tbody>
+</table>
+<h4 id="to_range">to_range<a class="headerlink" href="#to_range" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Runtime</th>
+<th style="text-align: right;">ns/op</th>
+<th style="text-align: right;">vs MRI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>go-ruby (pure Go)</strong></td>
+<td style="text-align: right;">141.5</td>
+<td style="text-align: right;">0.23×</td>
+</tr>
+<tr>
+<td>MRI</td>
+<td style="text-align: right;">621.0</td>
+<td style="text-align: right;">1.00×</td>
+</tr>
+<tr>
+<td>MRI + YJIT</td>
+<td style="text-align: right;">326.5</td>
+<td style="text-align: right;">0.53×</td>
+</tr>
+<tr>
+<td>JRuby</td>
+<td style="text-align: right;">90.5</td>
+<td style="text-align: right;">0.15×</td>
+</tr>
+<tr>
+<td>TruffleRuby</td>
+<td style="text-align: right;">3182.6</td>
+<td style="text-align: right;">5.12×</td>
+</tr>
+</tbody>
+</table>
+<h4 id="to_s-v6">to_s-v6<a class="headerlink" href="#to_s-v6" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Runtime</th>
+<th style="text-align: right;">ns/op</th>
+<th style="text-align: right;">vs MRI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>go-ruby (pure Go)</strong></td>
+<td style="text-align: right;">8538.1</td>
+<td style="text-align: right;">1.81×</td>
+</tr>
+<tr>
+<td>MRI</td>
+<td style="text-align: right;">4712.0</td>
+<td style="text-align: right;">1.00×</td>
+</tr>
+<tr>
+<td>MRI + YJIT</td>
+<td style="text-align: right;">4654.5</td>
+<td style="text-align: right;">0.99×</td>
+</tr>
+<tr>
+<td>JRuby</td>
+<td style="text-align: right;">2489.6</td>
+<td style="text-align: right;">0.53×</td>
+</tr>
+<tr>
+<td>TruffleRuby</td>
+<td style="text-align: right;">9480.1</td>
+<td style="text-align: right;">2.01×</td>
+</tr>
+</tbody>
+</table>
+<p>Split down the middle. <strong><code>include?</code> (0.42×) and <code>to_range</code> (0.23×) are faster
+than MRI</strong> — ~2.4× and ~4.4× — because they are pure integer comparisons on the
+already-parsed <code>*big.Int</code> begin/end addresses with no reparsing. The costs are on
+the <strong>construction and formatting</strong> side: <code>parse-v4</code> (3.33×), <code>parse-v6</code> (1.74×)
+and <code>mask</code> (3.59×, which reparses then masks) are slower than MRI's C <code>IPAddr</code>
+because the pure-Go library carries every address through <code>math/big</code> allocation
+to handle IPv4 and IPv6 uniformly at arbitrary precision, versus MRI's native
+machine-integer path. <code>to_s-v6</code> (1.81×) runs the MRI-faithful zero-collapse cascade
+through <code>regexp</code>. Those allocation- and regexp-heavy construction/format paths are
+the module's clear optimization targets (a small-integer fast path for IPv4 and a
+regexp-free <code>to_s</code> compactor); the query operations already beat the reference. The
+TruffleRuby <code>include</code> (4.25×) and <code>to_range</code> (5.12×) columns are <strong>cold-JIT
+outliers</strong> on these sub-microsecond loops — Graal had not compiled the hot loop
+within the warm-up budget — not steady-state figures.</p>
+<div class="admonition note">
+<p class="admonition-title">Reproduce</p>
+<p>The harness is committed under
+<a href="https://github.com/go-ruby-ipaddr/docs/tree/main/benchmarks"><code>benchmarks/</code></a>:
+a self-contained Go driver (<code>go/</code>, pins the published library via
+<code>go.mod</code>), the equivalent <code>ruby/ipaddr.rb</code> workload, and <code>run.sh</code>. Run
+<code>bash benchmarks/run.sh</code>; env <code>OUTER</code>/<code>WARM</code> tune the pass budget and
+<code>RUBY</code>/<code>JRUBY</code>/<code>TRUFFLERUBY</code> select the runtime binaries. <code>go run . verify</code>
+and <code>ruby ruby/ipaddr.rb verify</code> print the outputs that are diffed for parity.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warm-up budget &amp; noise — honest framing</p>
+<p>Numbers reflect a <strong>fixed warm-process budget</strong> (3 warm-up + 25 timed passes
+in one process). The JVM/GraalVM JITs (JRuby, TruffleRuby) may need a larger
+warm-up to reach steady state, so their columns can <strong>understate</strong> peak
+throughput — most visibly TruffleRuby on the shortest loops (the cold-JIT
+outliers noted above). Sub-microsecond rows carry the most relative noise;
+treat those ratios as order-of-magnitude. Every number here is a <strong>real
+measured value</strong> from the dated run above — nothing is fabricated, estimated,
+or cherry-picked. The go-ruby column is the pure-Go library; every other
+column is that interpreter's own stdlib doing the equivalent work.</p>
 </div>
 
 
