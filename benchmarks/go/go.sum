@@ -1,2 +1,4 @@
 github.com/go-ruby-ipaddr/ipaddr v0.0.0-20260703161726-aa530bab5d94 h1:jiBkqoVFwaEyZhAgNydP8s+kdAqUcj1fvencGs5NyhQ=
 github.com/go-ruby-ipaddr/ipaddr v0.0.0-20260703161726-aa530bab5d94/go.mod h1:NbAjqDjT7Qx83yBMHYGCfPFzi+iAvQtrE3JT3nqS/+U=
+github.com/go-ruby-ipaddr/ipaddr v0.0.0-20260717065751-ac3e17f41c3e h1:05rg2MjIKFRsHXfktv+ey/weC5XWc6JsI6nOL4gAUs0=
+github.com/go-ruby-ipaddr/ipaddr v0.0.0-20260717065751-ac3e17f41c3e/go.mod h1:NbAjqDjT7Qx83yBMHYGCfPFzi+iAvQtrE3JT3nqS/+U=
