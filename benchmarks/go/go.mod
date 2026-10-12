@@ -1,5 +1,5 @@
 module bench
 
-go 1.26.4
+go 1.27.1
 
-require github.com/go-ruby-ipaddr/ipaddr v0.0.0-20260916094116-8c16b4082722
+require github.com/go-ruby-ipaddr/ipaddr v0.0.0-20261010110509-96f92f7569a2
