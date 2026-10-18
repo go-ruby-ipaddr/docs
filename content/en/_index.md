@@ -1,4 +1,9 @@
-# go-ruby-ipaddr documentation
+---
+title: "Home"
+weight: 10
+---
+
+# go-ruby-ipaddr documentation {#go-ruby-ipaddr-documentation}
 
 **Ruby's `IPAddr` in pure Go — parsing, masking, predicates & operators, MRI byte-exact, no cgo.**
 
@@ -11,10 +16,13 @@ by `rbgo` as a native module — just like
 [go-ruby-erb](https://github.com/go-ruby-erb). The dependency runs the other way:
 this library has **no dependency on the Ruby runtime**.
 
-!!! success "Status: complete"
-    **Complete — MRI byte-exact.** Faithful port of Ruby's `IPAddr`: **parsing** (prefixlen / netmask / bracketed IPv6 / `%zone` / embedded IPv4), **formatting** (`to_s` / `to_string` / `cidr` / `inspect`), **masking**, **membership** (`include?` / `to_range`), the **bitwise / arithmetic** operators, **comparison**, the **predicates** and **conversions**, all in `math/big.Int`. Validated by a **differential oracle** against the system `ruby -ripaddr` — at 100% coverage, `gofmt` + `go vet` clean, CI green across the six 64-bit Go targets and three OSes.
+{{< callout type="info" >}}
+**Status: complete**
 
-## Quick taste
+**Complete — MRI byte-exact.** Faithful port of Ruby's `IPAddr`: **parsing** (prefixlen / netmask / bracketed IPv6 / `%zone` / embedded IPv4), **formatting** (`to_s` / `to_string` / `cidr` / `inspect`), **masking**, **membership** (`include?` / `to_range`), the **bitwise / arithmetic** operators, **comparison**, the **predicates** and **conversions**, all in `math/big.Int`. Validated by a **differential oracle** against the system `ruby -ripaddr` — at 100% coverage, `gofmt` + `go vet` clean, CI green across the six 64-bit Go targets and three OSes.
+{{< /callout >}}
+
+## Quick taste {#quick-taste}
 
 ```go
 net, _ := ipaddr.New("192.168.1.5/24")
@@ -26,7 +34,7 @@ in, _ := net.Include("192.168.1.99") // true
 lo, hi, _ := net.ToRange()           // 192.168.1.0 .. 192.168.1.255
 ```
 
-## Repositories
+## Repositories {#repositories}
 
 | Repo | What it is |
 | --- | --- |
@@ -35,7 +43,7 @@ lo, hi, _ := net.ToRange()           // 192.168.1.0 .. 192.168.1.255
 | [`go-ruby-ipaddr.github.io`](https://github.com/go-ruby-ipaddr/go-ruby-ipaddr.github.io) | the organization landing page (Hugo) |
 | [`brand`](https://github.com/go-ruby-ipaddr/brand) | logo and brand assets |
 
-## Principles
+## Principles {#principles}
 
 - **Pure Go, `CGO_ENABLED=0`** — trivial cross-compilation, a single static
   binary, no C toolchain.
@@ -46,11 +54,11 @@ lo, hi, _ := net.ToRange()           // 192.168.1.0 .. 192.168.1.255
 - **100% test coverage** is the target, enforced as a CI gate, across 6 arches
   and 3 OSes.
 
-## Where to go next
+## Where to go next {#where-to-go-next}
 
-- [Why pure Go](why.md) — why this slice of Ruby is deterministic enough to live
+- [Why pure Go]({{< relref "why.md" >}}) — why this slice of Ruby is deterministic enough to live
   as a standalone, interpreter-independent Go library.
-- [Usage & API](api.md) — the public surface and worked examples.
-- [Roadmap](roadmap.md) — what is done and what is downstream by design.
+- [Usage & API]({{< relref "api.md" >}}) — the public surface and worked examples.
+- [Roadmap]({{< relref "roadmap.md" >}}) — what is done and what is downstream by design.
 
 Source lives at [github.com/go-ruby-ipaddr/ipaddr](https://github.com/go-ruby-ipaddr/ipaddr).

@@ -1,4 +1,9 @@
-# Performance
+---
+title: "Performance"
+weight: 50
+---
+
+# Performance {#performance}
 
 `go-ruby-ipaddr/ipaddr` is the pure-Go library that
 [`rbgo`](https://github.com/go-embedded-ruby/ruby) binds for Ruby's `ipaddr`. This
@@ -6,7 +11,7 @@ page records the **methodology** for the comparative benchmark of that module
 against the reference Ruby runtimes, part of the ecosystem-wide per-module parity
 suite.
 
-## What is measured
+## What is measured {#what-is-measured}
 
 The **same** Ruby script — a representative `IPAddr` workload — is run under every
 runtime. `rbgo`'s number reflects **this pure-Go library doing the work**; every
@@ -24,7 +29,7 @@ MRI** before timing.
   (`ipaddr.rb` + `run.sh`). Reproduce:
   `RBGO=./rbgo TRUFFLE=truffleruby bash bench/modules/run.sh 5`.
 
-## Result (best of 5, ms)
+## Result (best of 5, ms) {#result-best-of-5-ms}
 
 | Runtime | time | vs MRI |
 | --- | ---: | ---: |
@@ -36,16 +41,19 @@ MRI** before timing.
 
 rbgo runs on **go-ruby-ipaddr** at near parity with MRI (1.91x) on this parse + subnet-membership + range workload.
 
-!!! note "Honest framing"
-    JRuby and TruffleRuby are timed **cold, single-shot**, so they carry JVM /
-    Graal startup on every run — read them as one-shot `ruby file.rb` costs, the
-    same way `rbgo` and MRI are measured, not as steady-state JIT numbers. Rows
-    that complete in well under ~200 ms carry the most relative noise; treat
-    their ratios as order-of-magnitude. These are **real measured numbers** from
-    the 2026-06-30 run (Apple M-series; `ruby 4.0.5 +PRISM`, `jruby 10.1.0.0`,
-    `truffleruby 34.0.1`) — nothing is fabricated or cherry-picked.
+{{< callout type="info" >}}
+**Honest framing**
 
-## Library-level benchmark (Go API vs runtimes) — 2026-07-03
+JRuby and TruffleRuby are timed **cold, single-shot**, so they carry JVM /
+Graal startup on every run — read them as one-shot `ruby file.rb` costs, the
+same way `rbgo` and MRI are measured, not as steady-state JIT numbers. Rows
+that complete in well under ~200 ms carry the most relative noise; treat
+their ratios as order-of-magnitude. These are **real measured numbers** from
+the 2026-06-30 run (Apple M-series; `ruby 4.0.5 +PRISM`, `jruby 10.1.0.0`,
+`truffleruby 34.0.1`) — nothing is fabricated or cherry-picked.
+{{< /callout >}}
+
+## Library-level benchmark (Go API vs runtimes) — 2026-07-03 {#library-level-benchmark-go-api-vs-runtimes-2026-07-03}
 
 This section measures the **pure-Go library directly, through its Go API** — not
 the `rbgo` interpreter path recorded above. It isolates the library primitive
@@ -71,7 +79,7 @@ TruffleRuby too).
   `2001:0db8:0000:0000:0000:ff00:0042:8329`, membership host `192.168.1.100`,
   mask source `192.168.15.7` masked to `/24`.
 
-#### include
+#### include {#include}
 
 | Runtime | ns/op | vs MRI |
 | --- | ---: | ---: |
@@ -81,7 +89,7 @@ TruffleRuby too).
 | JRuby | 28.0 | 0.14× |
 | TruffleRuby | 845.0 | 4.30× |
 
-#### mask
+#### mask {#mask}
 
 | Runtime | ns/op | vs MRI |
 | --- | ---: | ---: |
@@ -91,7 +99,7 @@ TruffleRuby too).
 | JRuby | 539.8 | 0.39× |
 | TruffleRuby | 925.2 | 0.67× |
 
-#### parse-v4
+#### parse-v4 {#parse-v4}
 
 | Runtime | ns/op | vs MRI |
 | --- | ---: | ---: |
@@ -101,7 +109,7 @@ TruffleRuby too).
 | JRuby | 605.6 | 0.41× |
 | TruffleRuby | 598.0 | 0.41× |
 
-#### parse-v6
+#### parse-v6 {#parse-v6}
 
 | Runtime | ns/op | vs MRI |
 | --- | ---: | ---: |
@@ -111,7 +119,7 @@ TruffleRuby too).
 | JRuby | 1726.1 | 0.51× |
 | TruffleRuby | 1823.2 | 0.53× |
 
-#### to_range
+#### to_range {#to_range}
 
 | Runtime | ns/op | vs MRI |
 | --- | ---: | ---: |
@@ -121,7 +129,7 @@ TruffleRuby too).
 | JRuby | 93.3 | 0.15× |
 | TruffleRuby | 293.0 | 0.49× |
 
-#### to_s-v6
+#### to_s-v6 {#to_s-v6}
 
 | Runtime | ns/op | vs MRI |
 | --- | ---: | ---: |
@@ -159,22 +167,28 @@ The TruffleRuby `include` (4.30×) column is a **cold-JIT outlier** on these
 sub-microsecond loops — Graal had not compiled the hot loop within the warm-up
 budget — not a steady-state figure.
 
-!!! note "Reproduce"
-    The harness is committed under
-    [`benchmarks/`](https://github.com/go-ruby-ipaddr/docs/tree/main/benchmarks):
-    a self-contained Go driver (`go/`, pins the published library via
-    `go.mod`), the equivalent `ruby/ipaddr.rb` workload, and `run.sh`. Run
-    `bash benchmarks/run.sh`; env `OUTER`/`WARM` tune the pass budget and
-    `RUBY`/`JRUBY`/`TRUFFLERUBY` select the runtime binaries. `go run . verify`
-    and `ruby ruby/ipaddr.rb verify` print the outputs that are diffed for parity.
+{{< callout type="info" >}}
+**Reproduce**
 
-!!! warning "Warm-up budget & noise — honest framing"
-    Numbers reflect a **fixed warm-process budget** (3 warm-up + 25 timed passes
-    in one process). The JVM/GraalVM JITs (JRuby, TruffleRuby) may need a larger
-    warm-up to reach steady state, so their columns can **understate** peak
-    throughput — most visibly TruffleRuby on the shortest loops (the cold-JIT
-    outliers noted above). Sub-microsecond rows carry the most relative noise;
-    treat those ratios as order-of-magnitude. Every number here is a **real
-    measured value** from the dated run above — nothing is fabricated, estimated,
-    or cherry-picked. The go-ruby column is the pure-Go library; every other
-    column is that interpreter's own stdlib doing the equivalent work.
+The harness is committed under
+[`benchmarks/`](https://github.com/go-ruby-ipaddr/docs/tree/main/benchmarks):
+a self-contained Go driver (`go/`, pins the published library via
+`go.mod`), the equivalent `ruby/ipaddr.rb` workload, and `run.sh`. Run
+`bash benchmarks/run.sh`; env `OUTER`/`WARM` tune the pass budget and
+`RUBY`/`JRUBY`/`TRUFFLERUBY` select the runtime binaries. `go run . verify`
+and `ruby ruby/ipaddr.rb verify` print the outputs that are diffed for parity.
+{{< /callout >}}
+
+{{< callout type="warning" >}}
+**Warm-up budget & noise — honest framing**
+
+Numbers reflect a **fixed warm-process budget** (3 warm-up + 25 timed passes
+in one process). The JVM/GraalVM JITs (JRuby, TruffleRuby) may need a larger
+warm-up to reach steady state, so their columns can **understate** peak
+throughput — most visibly TruffleRuby on the shortest loops (the cold-JIT
+outliers noted above). Sub-microsecond rows carry the most relative noise;
+treat those ratios as order-of-magnitude. Every number here is a **real
+measured value** from the dated run above — nothing is fabricated, estimated,
+or cherry-picked. The go-ruby column is the pure-Go library; every other
+column is that interpreter's own stdlib doing the equivalent work.
+{{< /callout >}}

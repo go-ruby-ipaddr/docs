@@ -1,4 +1,9 @@
-# Roadmap
+---
+title: "Roadmap"
+weight: 40
+---
+
+# Roadmap {#roadmap}
 
 `go-ruby-ipaddr/ipaddr` is grown **test-first**, each capability differential-tested against MRI
 rather than built in isolation. Ruby's IPAddr — the deterministic,
@@ -13,7 +18,7 @@ interpreter-independent slice — is **complete**.
 | Comparison, predicates & conversions | `<=>` (Comparable), `==`, `Hash`; `ipv4?` / `ipv6?` / `loopback?` / `private?` / `link_local?` / `ipv4_mapped?` / `ipv4_compat?`; `native` / `ipv4_mapped` / `ipv4_compat` / `hton` / `ntop` / `new_ntoh` / `family` / `to_i`; the `InvalidAddressError` / `InvalidPrefixError` / `AddressFamilyError` family. | **Done** |
 | Differential oracle & coverage | A wide corpus parsed and formatted here and compared to the system `ruby -ripaddr` — strings, predicates, operators, `to_range`, conversions, error class + message. 100% coverage, gofmt + go vet clean, green across all six 64-bit Go arches and three OSes. | **Done** |
 
-## Documented out-of-scope boundaries
+## Documented out-of-scope boundaries {#documented-out-of-scope-boundaries}
 
 These are **deliberate**, recorded so the module's surface is unambiguous:
 
@@ -27,5 +32,5 @@ These are **deliberate**, recorded so the module's surface is unambiguous:
 - **Standalone & reusable.** The module has no dependency on the Ruby runtime;
   the dependency runs the other way.
 
-See [Usage & API](api.md) for the surface and [Why pure Go](why.md) for the
+See [Usage & API]({{< relref "api.md" >}}) for the surface and [Why pure Go]({{< relref "why.md" >}}) for the
 deterministic/interpreter split.
